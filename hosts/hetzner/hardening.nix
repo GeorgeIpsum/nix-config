@@ -25,7 +25,7 @@ in {
   networking.nftables.enable = true;
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 22 ]; # REMOVE after Tailscale verified (plan Task 10 step 5)
+    allowedTCPPorts = [ ]; # SSH via tailnet only
     # tailscale0: SSH + kubectl 6443 over the tailnet
     # cni0/flannel.1: k3s pod traffic must reach the host-side API/kubelet
     trustedInterfaces = [ "tailscale0" "cni0" "flannel.1" ];
