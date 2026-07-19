@@ -1,5 +1,5 @@
 { config, lib, private, ... }: {
-  imports = [ ./disko.nix ./hardening.nix ./k3s.nix ];
+  imports = [ ./disko.nix ./hardening.nix ./k3s.nix ./backup.nix ];
 
   networking.hostName = "hetzner";
   networking.hostId = "8425e349"; # required by ZFS; any fixed 8-hex-digit value
