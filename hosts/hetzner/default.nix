@@ -1,9 +1,17 @@
-{ config, private, ... }: {
+{ config, lib, private, ... }: {
   imports = [ ./disko.nix ./hardening.nix ./k3s.nix ];
 
   networking.hostName = "hetzner";
   networking.hostId = "8425e349"; # required by ZFS; any fixed 8-hex-digit value
-  boot.loader.grub.enable = true; # devices come from disko's EF02 partitions
+  boot.loader.grub = {
+    enable = true;
+    mirroredBoots = [
+      { devices = [ "/dev/nvme0n1" ]; path = "/boot"; }
+      { devices = [ "/dev/nvme1n1" ]; path = "/boot2"; }
+    ];
+    # neutralize disko's EF02-derived devices so they don't duplicate mirroredBoots
+    devices = lib.mkForce [ ];
+  };
   boot.supportedFilesystems = [ "zfs" ];
 
   networking.useDHCP = true; # Hetzner dedicated IPv4 via DHCP

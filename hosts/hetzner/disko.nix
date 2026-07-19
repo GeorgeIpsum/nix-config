@@ -1,4 +1,7 @@
 # 2x Samsung 512GB NVMe + BIOS boot confirmed in rescue (Task 9).
+# Separate ext4 /boot per disk: GRUB's ZFS reader can't handle modern pool
+# feature flags, so the kernel must live off-pool. (Attr names keep gpt order:
+# bios < boot < zfs alphabetically.)
 { ... }: {
   disko.devices = {
     disk.a = {
@@ -7,7 +10,11 @@
       content = {
         type = "gpt";
         partitions = {
-          boot = { size = "1M"; type = "EF02"; };
+          bios = { size = "1M"; type = "EF02"; };
+          boot = {
+            size = "1G";
+            content = { type = "filesystem"; format = "ext4"; mountpoint = "/boot"; };
+          };
           zfs = { size = "100%"; content = { type = "zfs"; pool = "rpool"; }; };
         };
       };
@@ -18,7 +25,11 @@
       content = {
         type = "gpt";
         partitions = {
-          boot = { size = "1M"; type = "EF02"; };
+          bios = { size = "1M"; type = "EF02"; };
+          boot = {
+            size = "1G";
+            content = { type = "filesystem"; format = "ext4"; mountpoint = "/boot2"; };
+          };
           zfs = { size = "100%"; content = { type = "zfs"; pool = "rpool"; }; };
         };
       };
