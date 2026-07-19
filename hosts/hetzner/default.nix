@@ -21,7 +21,7 @@
     isNormalUser = true;
     extraGroups = [ "wheel" ];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFlaOlhDKIRvZZyZDsX0NkCKOnUR99QFx0NrSq8wek3C georgeipsum@gmail.com"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIG1NhNbbvXtGDXCx5tRW6YgRgZ5dsYvWGTtQ28SaXIvu g1n@Mac"
     ];
   };
   security.sudo.wheelNeedsPassword = false;
