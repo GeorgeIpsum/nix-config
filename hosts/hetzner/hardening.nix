@@ -26,7 +26,9 @@ in {
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ 22 ]; # REMOVE after Tailscale verified (plan Task 10 step 5)
-    trustedInterfaces = [ "tailscale0" ]; # SSH + kubectl 6443 over the tailnet
+    # tailscale0: SSH + kubectl 6443 over the tailnet
+    # cni0/flannel.1: k3s pod traffic must reach the host-side API/kubelet
+    trustedInterfaces = [ "tailscale0" "cni0" "flannel.1" ];
     extraInputRules = ''
       ip  saddr { ${builtins.concatStringsSep ", " cfV4} } tcp dport { 80, 443 } accept
       ip6 saddr { ${builtins.concatStringsSep ", " cfV6} } tcp dport { 80, 443 } accept
