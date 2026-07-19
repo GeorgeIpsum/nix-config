@@ -15,6 +15,7 @@ let
 in {
   services.openssh = {
     enable = true;
+    openFirewall = false; # SSH via tailnet only (tailscale0 is trusted)
     settings = {
       PermitRootLogin = "no";
       PasswordAuthentication = false;
