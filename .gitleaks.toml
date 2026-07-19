@@ -1,0 +1,6 @@
+[extend]
+useDefault = true
+
+[allowlist]
+# sops files are age-encrypted
+paths = ["""secrets/.*\\.yaml"""]
