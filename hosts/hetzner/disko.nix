@@ -1,10 +1,9 @@
-# Device names assumed sda/sdb — confirm in rescue (lsblk) and adjust if NVMe.
-# BIOS boot assumed — if UEFI, switch boot partitions to ESPs (see plan Task 9).
+# 2x Samsung 512GB NVMe + BIOS boot confirmed in rescue (Task 9).
 { ... }: {
   disko.devices = {
     disk.a = {
       type = "disk";
-      device = "/dev/sda";
+      device = "/dev/nvme0n1";
       content = {
         type = "gpt";
         partitions = {
@@ -15,7 +14,7 @@
     };
     disk.b = {
       type = "disk";
-      device = "/dev/sdb";
+      device = "/dev/nvme1n1";
       content = {
         type = "gpt";
         partitions = {
