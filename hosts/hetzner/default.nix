@@ -3,10 +3,7 @@
 
   networking.hostName = "hetzner";
   networking.hostId = "8425e349"; # required by ZFS; any fixed 8-hex-digit value
-  boot.loader.grub = {
-    enable = true;
-    devices = [ "/dev/sda" "/dev/sdb" ];
-  };
+  boot.loader.grub.enable = true; # devices come from disko's EF02 partitions
   boot.supportedFilesystems = [ "zfs" ];
 
   networking.useDHCP = true; # Hetzner dedicated IPv4 via DHCP
