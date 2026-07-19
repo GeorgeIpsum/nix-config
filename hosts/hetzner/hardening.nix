@@ -34,6 +34,11 @@ in {
       ip6 saddr { ${builtins.concatStringsSep ", " cfV6} } tcp dport { 80, 443 } accept
     '';
     filterForward = true;
+    # trustedInterfaces only affects INPUT; the forward chain default-drops
+    # non-DNAT new connections, which kills pod->pod-IP dials (traefik->endpoints).
+    extraForwardRules = ''
+      iifname { "cni0", "flannel.1", "tailscale0" } accept
+    '';
   };
 
   # k3s svclb DNATs 80/443 to traefik in PREROUTING, bypassing INPUT, and the
