@@ -33,13 +33,22 @@ in {
       ip  saddr { ${builtins.concatStringsSep ", " cfV4} } tcp dport { 80, 443 } accept
       ip6 saddr { ${builtins.concatStringsSep ", " cfV6} } tcp dport { 80, 443 } accept
     '';
-    # k3s svclb DNATs 80/443 to traefik in PREROUTING, bypassing INPUT.
-    # filterForward creates a default-drop forward chain (trusted ifaces exempt);
-    # explicitly accept only CF-sourced 80/443 arriving on the WAN interface.
     filterForward = true;
-    extraForwardRules = ''
-      iifname "${private.interface}" ip  saddr { ${builtins.concatStringsSep ", " cfV4} } ct original proto-dst { 80, 443 } accept
-      iifname "${private.interface}" ip6 saddr { ${builtins.concatStringsSep ", " cfV6} } ct original proto-dst { 80, 443 } accept
+  };
+
+  # k3s svclb DNATs 80/443 to traefik in PREROUTING, bypassing INPUT, and the
+  # nixos-fw forward chain accepts ALL DNATed traffic ("ct status dnat accept")
+  # before extraForwardRules run. Enforce CF-only in a separate chain hooked at
+  # higher priority (-5 < filter 0) — a drop here is final. Extend the port set
+  # if future workloads expose more hostPorts.
+  networking.nftables.tables."cf-only-ingress" = {
+    family = "inet";
+    content = ''
+      chain forward-early {
+        type filter hook forward priority -5; policy accept;
+        iifname "${private.interface}" ct original proto-dst { 80, 443 } ip  saddr != { ${builtins.concatStringsSep ", " cfV4} } drop
+        iifname "${private.interface}" ct original proto-dst { 80, 443 } ip6 saddr != { ${builtins.concatStringsSep ", " cfV6} } drop
+      }
     '';
   };
 
