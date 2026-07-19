@@ -1,6 +1,6 @@
 # Cloudflare ranges pinned from https://www.cloudflare.com/ips-v4 and /ips-v6
 # (refresh when Cloudflare announces changes — rare)
-{ ... }:
+{ private, ... }:
 let
   cfV4 = [
     "173.245.48.0/20" "103.21.244.0/22" "103.22.200.0/22" "103.31.4.0/22"
@@ -32,6 +32,12 @@ in {
     extraInputRules = ''
       ip  saddr { ${builtins.concatStringsSep ", " cfV4} } tcp dport { 80, 443 } accept
       ip6 saddr { ${builtins.concatStringsSep ", " cfV6} } tcp dport { 80, 443 } accept
+    '';
+    # k3s svclb DNATs 80/443 to traefik in PREROUTING, bypassing INPUT —
+    # enforce CF-only on the forward path for WAN-ingress traffic too
+    extraForwardRules = ''
+      iifname "${private.interface}" ct original proto-dst { 80, 443 } ip  saddr != { ${builtins.concatStringsSep ", " cfV4} } drop
+      iifname "${private.interface}" ct original proto-dst { 80, 443 } ip6 saddr != { ${builtins.concatStringsSep ", " cfV6} } drop
     '';
   };
 
