@@ -1,9 +1,9 @@
 # Nightly lonk backup: sqlite-safe .backup copy -> restic -> rest-server on
-# the tailnet Windows box (g1nd). Repo/bucket: rest:http://g1nd:8000/lonk.
+# a tailnet device (endpoint in nix-private — public repo carries no tailnet names).
 # rest-server runs --no-auth: tailnet reachability + restic repo encryption
 # gate access. Persistent=true catches runs missed while the box was down;
 # a failed run (g1nd asleep) is retried at the next scheduled time.
-{ config, pkgs, ... }: {
+{ config, pkgs, private, ... }: {
   sops.secrets.restic-password = { };
 
   systemd.services.lonk-backup = {
@@ -12,7 +12,7 @@
     wants = [ "network-online.target" ];
     path = [ pkgs.restic pkgs.sqlite ];
     serviceConfig.Type = "oneshot";
-    environment.RESTIC_REPOSITORY = "rest:http://g1nd:8000/lonk";
+    environment.RESTIC_REPOSITORY = private.backupTarget;
     script = ''
       set -eu
       export RESTIC_PASSWORD_FILE=${config.sops.secrets.restic-password.path}
