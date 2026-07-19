@@ -1,7 +1,7 @@
 keys:
   - &admin age1x829huv8qzrfpyh94cjetn3pgdjvc39nq3f37m4cpfj9v54rg5hssylpcx
-  # &hetzner host key added after install (plan Task 10 step 2)
+  - &hetzner age18paw34lzgeqsk7hjxxghhdzw0jy9s7l3mkdd869uys2y3n9fa4asn0fn9f
 creation_rules:
   - path_regex: secrets/.*\.yaml$
     key_groups:
-      - age: [*admin]
+      - age: [*admin, *hetzner]
