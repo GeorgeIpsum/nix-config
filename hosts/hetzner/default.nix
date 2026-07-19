@@ -1,7 +1,7 @@
 { config, lib, private, ... }: {
   imports = [ ./disko.nix ./hardening.nix ./k3s.nix ./backup.nix ];
 
-  networking.hostName = "hetzner";
+  networking.hostName = "ebloved";
   networking.hostId = "8425e349"; # required by ZFS; any fixed 8-hex-digit value
   boot.loader.grub = {
     enable = true;

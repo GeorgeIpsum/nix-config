@@ -22,11 +22,11 @@
     },
     "nix-private": {
       "locked": {
-        "lastModified": 1784493253,
-        "narHash": "sha256-xy1qjTURhSJmqTg3boTvucDYdXep9AFif0zA5OLLkWE=",
+        "lastModified": 1784501072,
+        "narHash": "sha256-jXVHWw/NxVIcNg3CpOqphefyCqCjQAG9VmXdokzBgkY=",
         "ref": "refs/heads/main",
-        "rev": "864131b1afd4657a600e4b18cdacd6108af5458b",
-        "revCount": 4,
+        "rev": "65cc21c519227850395672d5a20496b23fd659a4",
+        "revCount": 5,
         "type": "git",
         "url": "ssh://git@github.com/GeorgeIpsum/nix-private"
       },
