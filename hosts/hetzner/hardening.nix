@@ -45,15 +45,18 @@ in {
   # k3s svclb DNATs 80/443 to traefik in PREROUTING, bypassing INPUT, and the
   # nixos-fw forward chain accepts ALL DNATed traffic ("ct status dnat accept")
   # before extraForwardRules run. Enforce CF-only in a separate chain hooked at
-  # higher priority (-5 < filter 0) — a drop here is final. Extend the port set
+  # higher priority (-5 < filter 0) — a drop here is final. "ct direction
+  # original" is REQUIRED: without it these rules also drop the WAN-arriving
+  # replies of pod-originated outbound 80/443 flows (ct original proto-dst is
+  # a flow property, matching both directions). Extend the port set
   # if future workloads expose more hostPorts.
   networking.nftables.tables."cf-only-ingress" = {
     family = "inet";
     content = ''
       chain forward-early {
         type filter hook forward priority -5; policy accept;
-        iifname "${private.interface}" ct original proto-dst { 80, 443 } ip  saddr != { ${builtins.concatStringsSep ", " cfV4} } drop
-        iifname "${private.interface}" ct original proto-dst { 80, 443 } ip6 saddr != { ${builtins.concatStringsSep ", " cfV6} } drop
+        iifname "${private.interface}" ct direction original ct original proto-dst { 80, 443 } ip  saddr != { ${builtins.concatStringsSep ", " cfV4} } drop
+        iifname "${private.interface}" ct direction original ct original proto-dst { 80, 443 } ip6 saddr != { ${builtins.concatStringsSep ", " cfV6} } drop
       }
     '';
   };
