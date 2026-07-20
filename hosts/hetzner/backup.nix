@@ -22,6 +22,8 @@
       sqlite3 "$DB" ".backup $TMP/lonk.db"
       VW=$(ls /var/lib/rancher/k3s/storage/pvc-*_vaultwarden_vaultwarden-data/db.sqlite3 2>/dev/null || true)
       [ -n "$VW" ] && sqlite3 "$VW" ".backup $TMP/vaultwarden.db"
+      PGD=$(ls -d /var/lib/rancher/k3s/storage/pvc-*_ebloved_ebloved-pgdump 2>/dev/null || true)
+      [ -n "$PGD" ] && cp "$PGD"/*.dump "$TMP"/ 2>/dev/null || true
       restic cat config >/dev/null 2>&1 || restic init
       restic backup "$TMP" --tag homelab
       restic forget --keep-daily 14 --keep-weekly 8 --prune
