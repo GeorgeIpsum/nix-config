@@ -14,14 +14,29 @@
   };
   boot.supportedFilesystems = [ "zfs" ];
 
-  networking.useDHCP = true; # Hetzner dedicated IPv4 via DHCP
-  networking.interfaces.${private.interface}.ipv6.addresses = [
-    { address = private.ipv6Address; prefixLength = 64; }
-  ];
+  # Static IPv4 — Hetzner dedicated hands out a fixed IP, and DHCP lease
+  # renewal proved fragile (lease expired → dhcpcd tore down the default
+  # route → IPv4 egress died while inbound/tailnet kept working). Static
+  # config removes the lease dependency entirely. Values from nix-private.
+  networking.useDHCP = false;
+  networking.interfaces.${private.interface} = {
+    ipv4.addresses = [
+      { address = private.ipv4; prefixLength = private.ipv4PrefixLength; }
+    ];
+    ipv6.addresses = [
+      { address = private.ipv6Address; prefixLength = 64; }
+    ];
+  };
+  networking.defaultGateway = {
+    address = private.ipv4Gateway;
+    interface = private.interface;
+  };
   networking.defaultGateway6 = {
     address = private.ipv6Gateway;
     interface = private.interface;
   };
+  # DHCP previously supplied resolvers; set them explicitly for static config.
+  networking.nameservers = [ "185.12.64.1" "185.12.64.2" "1.1.1.1" ];
 
   services.zfs.autoScrub.enable = true;
 
