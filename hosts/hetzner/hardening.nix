@@ -57,6 +57,10 @@ in {
         type filter hook forward priority -5; policy accept;
         iifname "${private.interface}" ct direction original ct original proto-dst { 80, 443 } ip  saddr != { ${builtins.concatStringsSep ", " cfV4} } drop
         iifname "${private.interface}" ct direction original ct original proto-dst { 80, 443 } ip6 saddr != { ${builtins.concatStringsSep ", " cfV6} } drop
+        # ferretdb (mongo wire) is tailnet-only: svclb DNATs 27017 from the WAN
+        # NIC too, so drop ALL public-arriving 27017 (tailnet arrives on
+        # tailscale0, not ${private.interface}, so it is unaffected).
+        iifname "${private.interface}" ct direction original ct original proto-dst 27017 drop
       }
     '';
   };
